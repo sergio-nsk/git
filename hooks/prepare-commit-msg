@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# Automatically adds task name and branch description to every commit message.
+# Expected branch name .*/TASK-1234/.*
+#
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+addTaskName() {
+  NAME=$(git branch | grep '^\*' | awk -F/ '{print $2}')
+  DESCRIPTION=$(git config branch."$NAME".description)
+
+  echo "$NAME"': '$(cat "$1") > "$1"
+  if [ -n "$DESCRIPTION" ]
+  then
+    echo "" >> "$1"
+    echo $DESCRIPTION >> "$1"
+  fi
+}
+
+# The merge-commit has branch information by default so extra branch name is
+# unnecessary and make the message ugly.
+MERGE=$(cat $COMMIT_EDITMSG | grep -i 'merge' | wc -l)
+if [ $MERGE -eq 0 ] ; then
+  addTaskName
+fi
