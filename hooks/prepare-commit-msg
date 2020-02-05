@@ -11,12 +11,12 @@ addTaskName() {
   NAME=$(git branch | grep '^\*' | awk -F/ '{print $2}')
   DESCRIPTION=$(git config branch."$NAME".description)
 
-  if [ -n "$COMMIT_MSG_FILE" ]; then
+  if [ -n "$COMMIT_MSG_FILE" -a -n "$NAME" ]; then
     echo "$NAME"': '$(cat "$COMMIT_MSG_FILE") > "$COMMIT_MSG_FILE"
   fi
   if [ -n "$DESCRIPTION" ]; then
-    echo "" >> "$1"
-    echo $DESCRIPTION >> "$1"
+    echo "" >> "$COMMIT_MSG_FILE"
+    echo $DESCRIPTION >> "$COMMIT_MSG_FILE"
   fi
 }
 
